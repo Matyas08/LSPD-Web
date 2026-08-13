@@ -1,0 +1,48 @@
+name: Discord Git Notification
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send Discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          COMMIT_MESSAGE=$(git log -1 --pretty=%B)
+          COMMIT_AUTHOR=$(git log -1 --pretty=%an)
+          COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
+
+          curl -H "Content-Type: application/json" \
+            -d "{
+              \"username\": \"LSPD Git\",
+              \"embeds\": [{
+                \"title\": \"🚔 LSPD Web – Nová změna\",
+                \"description\": \"Na GitHub byl nahrán nový commit.\",
+                \"color\": 3447003,
+                \"fields\": [
+                  {
+                    \"name\": \"📝 Commit\",
+                    \"value\": \"${COMMIT_MESSAGE}\",
+                    \"inline\": false
+                  },
+                  {
+                    \"name\": \"👤 Autor\",
+                    \"value\": \"${COMMIT_AUTHOR}\",
+                    \"inline\": true
+                  },
+                  {
+                    \"name\": \"🌐 Branch\",
+                    \"value\": \"main\",
+                    \"inline\": true
+                  }
+                ],
+                \"url\": \"${COMMIT_URL}\"
+              }]
+            }" \
+            "$DISCORD_WEBHOOK"
