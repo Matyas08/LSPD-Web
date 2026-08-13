@@ -55,6 +55,11 @@ export async function POST(request: Request) {
       );
     }
 
+    console.log(
+      "PŘIHLÁŠENÝ OFFICER:",
+      account
+    );
+
     return NextResponse.json({
       success: true,
       message: "Přihlášení bylo úspěšné.",
@@ -66,6 +71,9 @@ export async function POST(request: Request) {
         rank: account.rank,
         discord: account.discord,
         status: account.status,
+
+        // PROFILOVÁ FOTOGRAFIE
+        photo: account.photo || "",
       },
     });
   } catch (error) {
