@@ -1,116 +1,100 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function OfficerPortal() {
+type Officer = {
+  id: number;
+  request_id?: string;
+  name: string;
+  officer_id: string;
+  rank: string;
+  discord: string;
+  status: string;
+  photo?: string;
+};
 
+export default function OfficerPortal() {
   const router = useRouter();
 
   const fileInput = useRef<HTMLInputElement>(null);
 
-  const [officer, setOfficer] = useState<any>(null);
-
+  const [officer, setOfficer] = useState<Officer | null>(null);
 
   useEffect(() => {
-
-    const loggedInOfficer = localStorage.getItem("officerLoggedIn");
-
+    const loggedInOfficer = localStorage.getItem(
+      "officerLoggedIn"
+    );
 
     if (!loggedInOfficer) {
-
       router.push("/officer-login");
-
       return;
-
     }
 
+    try {
+      const parsedOfficer = JSON.parse(
+        loggedInOfficer
+      );
 
-    setOfficer(JSON.parse(loggedInOfficer));
-
-
+      setOfficer(parsedOfficer);
+    } catch {
+      localStorage.removeItem("officerLoggedIn");
+      router.push("/officer-login");
+    }
   }, [router]);
 
-
-
   function logout() {
-
     localStorage.removeItem("officerLoggedIn");
-
-    window.location.href = "http://localhost:3000/";
-
+    router.push("/");
   }
 
+  function uploadPhoto(
+    event: React.ChangeEvent<HTMLInputElement>
+  ) {
+    const file = event.target.files?.[0];
 
+    if (!file || !officer) {
+      return;
+    }
 
-function uploadPhoto(e: any) {
+    const reader = new FileReader();
 
-  const file = e.target.files[0];
+    reader.onload = () => {
+      const updatedOfficer: Officer = {
+        ...officer,
+        photo: reader.result as string,
+      };
 
-  if (!file) return;
+      localStorage.setItem(
+        "officerLoggedIn",
+        JSON.stringify(updatedOfficer)
+      );
 
-  const reader = new FileReader();
-
-  reader.onload = () => {
-
-    const updatedOfficer = {
-      ...officer,
-      photo: reader.result
+      setOfficer(updatedOfficer);
     };
 
-    // Uložení přihlášeného uživatele
-    localStorage.setItem(
-      "officerLoggedIn",
-      JSON.stringify(updatedOfficer)
+    reader.readAsDataURL(file);
+  }
+
+  if (!officer) {
+    return (
+      <main className="min-h-screen bg-gray-950 text-white flex items-center justify-center">
+        <p className="text-gray-400 text-lg">
+          Načítání profilu...
+        </p>
+      </main>
     );
-
-    // Načtení všech účtů
-    const accounts = JSON.parse(
-      localStorage.getItem("officerAccounts") || "[]"
-    );
-
-    // Aktualizace účtu přihlášeného policisty
-    const updatedAccounts = accounts.map((account: any) => {
-      if (
-        account.username === updatedOfficer.username &&
-        account.officerId === updatedOfficer.officerId
-      ) {
-        return updatedOfficer;
-      }
-
-      return account;
-    });
-
-    // Uložení zpět
-    localStorage.setItem(
-      "officerAccounts",
-      JSON.stringify(updatedAccounts)
-    );
-
-    // Aktualizace stránky
-    setOfficer(updatedOfficer);
-
-  };
-
-  reader.readAsDataURL(file);
-
-}
-
-
+  }
 
   return (
-
     <main className="min-h-screen bg-gray-950 text-white p-10">
-
-
       <div className="max-w-5xl mx-auto">
 
+        {/* HLAVIČKA */}
 
         <div className="bg-gray-900 p-8 rounded-xl mb-8">
 
-
           <div className="flex items-center gap-8">
-
 
             <input
               ref={fileInput}
@@ -120,144 +104,145 @@ function uploadPhoto(e: any) {
               className="hidden"
             />
 
-
-
             <img
-
-              onClick={() => fileInput.current?.click()}
-
               src={
-                officer?.photo ||
+                officer.photo ||
                 "https://www.supersoused.cz/bundles/ineedtemplate/images/avatar-customer.png"
               }
-
-              className="w-36 h-36 rounded-full object-cover cursor-pointer"
-
+              alt="Profilová fotografie"
+              onClick={() =>
+                fileInput.current?.click()
+              }
+              className="
+                w-36
+                h-36
+                rounded-full
+                object-cover
+                cursor-pointer
+                border-4
+                border-gray-700
+                hover:border-blue-500
+                transition
+              "
             />
 
+            <div>
+              <h1 className="text-5xl font-bold">
+                Los Santos Police Intranet
+              </h1>
 
-
-            <h1 className="text-5xl font-bold">
-              Los Santos Police Intranet
-            </h1>
-
+              <p className="text-gray-400 mt-3 text-lg">
+                Officer Portal
+              </p>
+            </div>
 
           </div>
 
+          {/* OSOBNÍ ÚDAJE */}
 
+          <div className="mt-8 bg-gray-800 p-8 rounded-xl">
 
+            <h2 className="text-3xl font-bold mb-6">
+              Osobní údaje
+            </h2>
 
+            <div className="space-y-4 text-xl">
 
-          {officer && (
+              <p>
+                <b>Jméno:</b>{" "}
+                {officer.name || "Neuvedeno"}
+              </p>
 
+              <p>
+                <b>Číslo odznaku:</b>{" "}
+                {officer.officer_id || "Neuvedeno"}
+              </p>
 
-            <div className="mt-8 bg-gray-800 p-8 rounded-xl">
+              <p>
+                <b>Hodnost:</b>{" "}
+                {officer.rank || "Neuvedeno"}
+              </p>
 
+              <p>
+                <b>Discord:</b>{" "}
+                {officer.discord || "Neuvedeno"}
+              </p>
 
-              <h2 className="text-3xl font-bold mb-6">
-                Osobní údaje
-              </h2>
-
-
-
-              <div className="space-y-4 text-xl">
-
-
-                <p>
-                  <b>Jméno:</b> {officer.name}
-                </p>
-
-
-                <p>
-                  <b>ID Policisty:</b> {officer.officerId}
-                </p>
-
-
-                <p>
-                  <b>Hodnost:</b> {officer.rank}
-                </p>
-
-
-                <p>
-                  <b>Discord:</b> {officer.discord}
-                </p>
-
-
-              </div>
-
+              <p>
+                <b>Stav účtu:</b>{" "}
+                <span className="text-green-400">
+                  {officer.status || "Active"}
+                </span>
+              </p>
 
             </div>
 
+          </div>
 
-          )}
-
-
-
-
-
+          {/* ODHLÁŠENÍ */}
 
           <button
-
             onClick={logout}
-
-            className="mt-8 bg-red-600 px-6 py-3 rounded text-lg"
-
+            className="
+              mt-8
+              bg-red-600
+              hover:bg-red-700
+              px-6
+              py-3
+              rounded
+              text-lg
+              font-bold
+              transition
+            "
           >
-
             Odhlásit se
-
           </button>
-
-
 
         </div>
 
-
-
-
-
+        {/* SEKCE PORTÁLU */}
 
         <div className="grid md:grid-cols-3 gap-5">
 
-
-          <div className="bg-gray-900 p-6 rounded-xl">
+          <div className="bg-gray-900 p-6 rounded-xl hover:bg-gray-800 transition cursor-pointer">
 
             <h2 className="text-xl font-bold">
               📄 Dokumenty
             </h2>
 
+            <p className="text-gray-400 mt-2">
+              Policejní dokumenty a materiály.
+            </p>
+
           </div>
 
-
-
-          <div className="bg-gray-900 p-6 rounded-xl">
+          <div className="bg-gray-900 p-6 rounded-xl hover:bg-gray-800 transition cursor-pointer">
 
             <h2 className="text-xl font-bold">
               📋 SOP
             </h2>
 
+            <p className="text-gray-400 mt-2">
+              Standardní operační postupy.
+            </p>
+
           </div>
 
-
-
-          <div className="bg-gray-900 p-6 rounded-xl">
+          <div className="bg-gray-900 p-6 rounded-xl hover:bg-gray-800 transition cursor-pointer">
 
             <h2 className="text-xl font-bold">
               📝 Formuláře
             </h2>
 
-          </div>
+            <p className="text-gray-400 mt-2">
+              Policejní formuláře a žádosti.
+            </p>
 
+          </div>
 
         </div>
 
-
-
       </div>
-
-
     </main>
-
   );
-
 }

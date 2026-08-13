@@ -76,79 +76,85 @@ export default function Register() {
     setLoading(true);
 
     try {
-      // Zavolání API pro kontrolu Discord uživatele
+      // =====================================================
+      // 1. KONTROLA DISCORDU
+      // =====================================================
+
       const checkRes = await fetch("/api/check-discord-member", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ discordUserId: discord.trim() }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          discordUserId: discord.trim(),
+        }),
       });
 
       const checkData = await checkRes.json();
 
-      if (!checkData.isMember) {
-        alert("PŘÍSTUP ZAMÍTNUT: Tento účet není členem nášho Discord serveru LSPD!");
+      if (!checkRes.ok || !checkData.isMember) {
+        alert(
+          "PŘÍSTUP ZAMÍTNUT: Tento účet není členem našeho Discord serveru LSPD!"
+        );
+
         setLoading(false);
         return;
       }
 
-      const requests = JSON.parse(
-        localStorage.getItem("officerRequests") || "[]"
-      );
+      // =====================================================
+      // 2. ODESLÁNÍ ŽÁDOSTI DO DATABÁZE
+      // =====================================================
 
-      const accounts = JSON.parse(
-        localStorage.getItem("officerAccounts") || "[]"
-      );
+      const response = await fetch("/api/register-request", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: name.trim(),
+          officerId: officerId.trim(),
+          rank: rank,
+          discord: discord.trim(),
+          password: password,
+        }),
+      });
 
-      const activeRequest = requests.find(
-        (user: any) =>
-          (user.officerId === officerId || user.discord === discord) &&
-          user.status === "Pending"
-      );
+      const data = await response.json();
 
-      if (activeRequest) {
-        alert("Již máte aktivní žádost. Počkejte na její vyřízení IT oddělením.");
+      if (!response.ok || !data.success) {
+        alert(
+          data.error ||
+            "Nepodařilo se uložit žádost do databáze."
+        );
+
         setLoading(false);
         return;
       }
 
-      const existingAccount = accounts.find(
-        (user: any) => user.officerId === officerId || user.discord === discord
+      // =====================================================
+      // 3. ÚSPĚŠNÉ ODESLÁNÍ
+      // =====================================================
+
+      alert(
+        "Žádost byla úspěšně odeslána a čeká na schválení IT oddělením LSPD."
       );
 
-      if (existingAccount) {
-        alert("Tento služební účet již existuje.");
-        setLoading(false);
-        return;
-      }
-
-      const requestId =
-        "REQ-" + Math.floor(10000 + Math.random() * 90000);
-
-      const newRequest = {
-        id: Date.now(),
-        requestId,
-        name,
-        officerId,
-        rank,
-        discord,
-        password,
-        status: "Pending",
-        createdAt: new Date().toLocaleString("cs-CZ"),
-      };
-
-      requests.push(newRequest);
-      localStorage.setItem("officerRequests", JSON.stringify(requests));
-
-      alert("Žádost byla úspěšně odeslána a ověřena oproti Discordu.");
-
+      // Vyčištění formuláře
       setName("");
       setOfficerId("");
       setRank("");
       setDiscord("");
       setPassword("");
       setConfirmPassword("");
+
+      // Návrat na přihlášení
+      router.push("/officer-login");
     } catch (error) {
-      alert("Chyba při ověřování Discord účtu.");
+      console.error("REGISTER ERROR:", error);
+
+      alert(
+        "Došlo k chybě při komunikaci se serverem. Zkontrolujte, zda běží server."
+      );
     } finally {
       setLoading(false);
     }
@@ -157,6 +163,8 @@ export default function Register() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-black via-gray-950 to-blue-950 flex items-center justify-center p-6 text-white">
       <div className="w-full max-w-xl bg-gray-900/90 border border-gray-800 rounded-3xl p-8 shadow-2xl">
+
+        {/* NADPIS */}
         <h1 className="text-4xl font-black text-center mb-4">
           Registrace policejního účtu
         </h1>
@@ -165,26 +173,30 @@ export default function Register() {
           Vaše žádost bude zkontrolována IT oddělením LSPD.
         </p>
 
+        {/* JMÉNO */}
         <input
-          className="w-full p-4 mb-4 bg-gray-800 rounded-2xl border border-gray-700 outline-none"
+          className="w-full p-4 mb-4 bg-gray-800 rounded-2xl border border-gray-700 outline-none focus:border-blue-500"
           placeholder="Jméno a příjmení *"
           value={name}
           onChange={(e) => setName(e.target.value)}
         />
 
+        {/* ODZNAK */}
         <input
-          className="w-full p-4 mb-4 bg-gray-800 rounded-2xl border border-gray-700 outline-none"
+          className="w-full p-4 mb-4 bg-gray-800 rounded-2xl border border-gray-700 outline-none focus:border-blue-500"
           placeholder="Číslo služebního odznaku *"
           value={officerId}
           onChange={(e) => setOfficerId(e.target.value)}
         />
 
+        {/* HODNOST */}
         <select
-          className="w-full p-4 mb-4 bg-gray-800 rounded-2xl border border-gray-700 outline-none"
+          className="w-full p-4 mb-4 bg-gray-800 rounded-2xl border border-gray-700 outline-none focus:border-blue-500"
           value={rank}
           onChange={(e) => setRank(e.target.value)}
         >
           <option value="">Vyberte hodnost *</option>
+
           {ranks.map((item) => (
             <option key={item} value={item}>
               {item}
@@ -192,45 +204,53 @@ export default function Register() {
           ))}
         </select>
 
+        {/* DISCORD */}
         <input
-          className="w-full p-4 mb-1 bg-gray-800 rounded-2xl border border-gray-700 outline-none"
-          placeholder="Discord ID uživatele (např. 38283921...)"
+          className="w-full p-4 mb-1 bg-gray-800 rounded-2xl border border-gray-700 outline-none focus:border-blue-500"
+          placeholder="Discord ID uživatele"
           value={discord}
           onChange={(e) => setDiscord(e.target.value)}
         />
+
         <p className="text-xs text-gray-500 mb-4 px-2">
           Pravé tlačítko na vaše jméno v Discordu → Kopírovat ID uživatele.
         </p>
 
+        {/* HESLO */}
         <div className="relative mb-4">
           <input
-            className="w-full p-4 pr-14 bg-gray-800 rounded-2xl border border-gray-700 outline-none"
+            className="w-full p-4 pr-14 bg-gray-800 rounded-2xl border border-gray-700 outline-none focus:border-blue-500"
             placeholder="Heslo *"
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
+
           <button
             type="button"
-            className="absolute right-4 top-4"
+            className="absolute right-4 top-4 text-lg"
             onClick={() => setShowPassword(!showPassword)}
           >
             {showPassword ? "🙈" : "👁️"}
           </button>
         </div>
 
+        {/* POTVRZENÍ HESLA */}
         <div className="relative mb-2">
           <input
-            className="w-full p-4 pr-14 bg-gray-800 rounded-2xl border border-gray-700 outline-none"
+            className="w-full p-4 pr-14 bg-gray-800 rounded-2xl border border-gray-700 outline-none focus:border-blue-500"
             placeholder="Potvrzení hesla *"
             type={showConfirmPassword ? "text" : "password"}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
           />
+
           <button
             type="button"
-            className="absolute right-4 top-4"
-            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+            className="absolute right-4 top-4 text-lg"
+            onClick={() =>
+              setShowConfirmPassword(!showConfirmPassword)
+            }
           >
             {showConfirmPassword ? "🙈" : "👁️"}
           </button>
@@ -240,20 +260,25 @@ export default function Register() {
           Heslo musí obsahovat minimálně 5 znaků.
         </p>
 
+        {/* ODESLAT */}
         <button
           onClick={submitRequest}
           disabled={loading}
-          className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 rounded-2xl font-black text-lg"
+          className="w-full py-4 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 rounded-2xl font-black text-lg transition"
         >
-          {loading ? "Ověřování na Discordu..." : "📝 Odeslat žádost"}
+          {loading
+            ? "Ověřování a ukládání..."
+            : "📝 Odeslat žádost"}
         </button>
 
+        {/* ZPĚT */}
         <button
           onClick={() => router.push("/officer-login")}
-          className="w-full mt-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-2xl font-bold"
+          className="w-full mt-4 py-3 bg-gray-800 hover:bg-gray-700 rounded-2xl font-bold transition"
         >
           ← Zpět na přihlášení
         </button>
+
       </div>
     </main>
   );
