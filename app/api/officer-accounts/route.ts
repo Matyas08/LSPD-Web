@@ -48,6 +48,167 @@ export async function GET() {
 }
 
 // ==========================================
+// POST - NAHRÁNÍ PROFILOVÉ FOTOGRAFIE
+// ==========================================
+
+export async function POST(req: Request) {
+  try {
+    const formData = await req.formData();
+
+    const id = formData.get("id");
+    const file = formData.get("file");
+
+    // Kontrola ID
+    if (!id) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Chybí ID účtu.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Kontrola souboru
+    if (!file || !(file instanceof File)) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Nebyl vybrán žádný obrázek.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Kontrola typu souboru
+    if (!file.type.startsWith("image/")) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Soubor musí být obrázek.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // Maximální velikost 5 MB
+    if (file.size > 5 * 1024 * 1024) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Obrázek může mít maximálně 5 MB.",
+        },
+        { status: 400 }
+      );
+    }
+
+    // ==========================================
+    // NÁZEV SOUBORU
+    // ==========================================
+
+    const fileExtension =
+      file.name.split(".").pop()?.toLowerCase() || "jpg";
+
+    const filePath = `${id}/profile-${Date.now()}.${fileExtension}`;
+
+    // ==========================================
+    // PŘEVOD SOUBORU
+    // ==========================================
+
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    // ==========================================
+    // UPLOAD DO SUPABASE STORAGE
+    // ==========================================
+
+    const { error: uploadError } = await supabase.storage
+      .from("officer-photos")
+      .upload(filePath, buffer, {
+        contentType: file.type,
+        upsert: true,
+      });
+
+    if (uploadError) {
+      console.error("PHOTO UPLOAD ERROR:", uploadError);
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: "Nepodařilo se nahrát profilovou fotografii.",
+          details: uploadError.message,
+        },
+        { status: 500 }
+      );
+    }
+
+    // ==========================================
+    // ZÍSKÁNÍ VEŘEJNÉ URL
+    // ==========================================
+
+    const { data: publicUrlData } = supabase.storage
+      .from("officer-photos")
+      .getPublicUrl(filePath);
+
+    const photoUrl = publicUrlData.publicUrl;
+
+    // ==========================================
+    // ULOŽENÍ URL DO DATABÁZE
+    // ==========================================
+
+    const { data, error: updateError } = await supabase
+      .from("officer_accounts")
+      .update({
+        photo: photoUrl,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (updateError) {
+      console.error(
+        "PHOTO DATABASE UPDATE ERROR:",
+        updateError
+      );
+
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            "Fotka byla nahrána, ale nepodařilo se uložit její adresu.",
+          details: updateError.message,
+        },
+        { status: 500 }
+      );
+    }
+
+    // ==========================================
+    // ÚSPĚCH
+    // ==========================================
+
+    return NextResponse.json({
+      success: true,
+      message:
+        "Profilová fotografie byla úspěšně uložena.",
+      photo: photoUrl,
+      account: data,
+    });
+  } catch (error) {
+    console.error("PHOTO API ERROR:", error);
+
+    return NextResponse.json(
+      {
+        success: false,
+        error:
+          "Serverová chyba při nahrávání fotografie.",
+      },
+      { status: 500 }
+    );
+  }
+}
+
+// ==========================================
 // DELETE - SMAZÁNÍ ÚČTU
 // ==========================================
 

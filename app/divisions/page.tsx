@@ -26,11 +26,11 @@ export default function Divisions() {
         <div className="space-x-6">
 
           <a href="/" className="hover:text-blue-400">
-            Home
+            Domov
           </a>
 
           <a href="/divisions" className="hover:text-blue-400">
-            Divisions
+            Divize
           </a>
 
           <a href="/command" className="hover:text-blue-400">
@@ -41,7 +41,7 @@ export default function Divisions() {
             href="/officer-login"
             className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700"
           >
-            Officer Login
+            Přihlášení důstojníka
           </a>
 
         </div>
@@ -56,7 +56,7 @@ export default function Divisions() {
       <section className="text-center py-20">
 
         <h2 className="text-5xl font-bold">
-          Divisions
+          Divize
         </h2>
 
         <p className="text-gray-400 text-xl mt-4">

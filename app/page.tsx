@@ -25,14 +25,14 @@ export default function Home() {
             href="/"
             className="hover:text-blue-400"
           >
-            Home
+            Domov
           </a>
 
           <a
             href="/divisions"
             className="hover:text-blue-400"
           >
-            Divisions
+            Divize
           </a>
 
           <a
@@ -46,7 +46,7 @@ export default function Home() {
             href="/officer-login"
             className="bg-blue-600 px-4 py-2 rounded-lg hover:bg-blue-700"
           >
-            Officer Login
+            Přihlášení důstojníka
           </a>
 
         </div>
@@ -125,10 +125,10 @@ export default function Home() {
           />
 
 
-          {/* DCOP - WILIS */}
+          {/* DCOP - WILlIS */}
           <OfficerCard
             rank="Deputy Chief of Police"
-            name="Henry Wilis"
+            name="Henry Willis"
             image="/images/wilis.png"
           />
 

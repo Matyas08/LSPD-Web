@@ -20,6 +20,8 @@ export default function OfficerPortal() {
   const fileInput = useRef<HTMLInputElement>(null);
 
   const [officer, setOfficer] = useState<Officer | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     const loggedInOfficer = localStorage.getItem(
@@ -32,9 +34,7 @@ export default function OfficerPortal() {
     }
 
     try {
-      const parsedOfficer = JSON.parse(
-        loggedInOfficer
-      );
+      const parsedOfficer = JSON.parse(loggedInOfficer);
 
       setOfficer(parsedOfficer);
     } catch {
@@ -48,7 +48,7 @@ export default function OfficerPortal() {
     router.push("/");
   }
 
-  function uploadPhoto(
+  async function uploadPhoto(
     event: React.ChangeEvent<HTMLInputElement>
   ) {
     const file = event.target.files?.[0];
@@ -57,23 +57,62 @@ export default function OfficerPortal() {
       return;
     }
 
-    const reader = new FileReader();
+    setUploading(true);
+    setMessage("");
 
-    reader.onload = () => {
+    try {
+      const formData = new FormData();
+
+      formData.append("id", String(officer.id));
+      formData.append("file", file);
+
+      const response = await fetch(
+        "/api/officer-accounts",
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(
+          data.error ||
+            "Nepodařilo se nahrát profilovou fotografii."
+        );
+      }
+
       const updatedOfficer: Officer = {
         ...officer,
-        photo: reader.result as string,
+        photo: data.photo,
       };
+
+      setOfficer(updatedOfficer);
 
       localStorage.setItem(
         "officerLoggedIn",
         JSON.stringify(updatedOfficer)
       );
 
-      setOfficer(updatedOfficer);
-    };
+      setMessage(
+        "Profilová fotografie byla úspěšně uložena."
+      );
+    } catch (error) {
+      console.error("PHOTO UPLOAD ERROR:", error);
 
-    reader.readAsDataURL(file);
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "Nastala chyba při nahrávání fotografie."
+      );
+    } finally {
+      setUploading(false);
+
+      if (fileInput.current) {
+        fileInput.current.value = "";
+      }
+    }
   }
 
   if (!officer) {
@@ -99,32 +138,46 @@ export default function OfficerPortal() {
             <input
               ref={fileInput}
               type="file"
-              accept="image/*"
+              accept="image/png,image/jpeg,image/webp"
               onChange={uploadPhoto}
               className="hidden"
             />
 
-            <img
-              src={
-                officer.photo ||
-                "https://www.supersoused.cz/bundles/ineedtemplate/images/avatar-customer.png"
-              }
-              alt="Profilová fotografie"
-              onClick={() =>
-                fileInput.current?.click()
-              }
-              className="
-                w-36
-                h-36
-                rounded-full
-                object-cover
-                cursor-pointer
-                border-4
-                border-gray-700
-                hover:border-blue-500
-                transition
-              "
-            />
+            <div className="relative">
+
+              <img
+                src={
+                  officer.photo ||
+                  "https://www.supersoused.cz/bundles/ineedtemplate/images/avatar-customer.png"
+                }
+                alt="Profilová fotografie"
+                onClick={() =>
+                  !uploading &&
+                  fileInput.current?.click()
+                }
+                className={`
+                  w-36
+                  h-36
+                  rounded-full
+                  object-cover
+                  cursor-pointer
+                  border-4
+                  border-gray-700
+                  hover:border-blue-500
+                  transition
+                  ${uploading ? "opacity-50" : ""}
+                `}
+              />
+
+              {uploading && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="bg-black/70 px-3 py-2 rounded-lg text-sm">
+                    Nahrávání...
+                  </div>
+                </div>
+              )}
+
+            </div>
 
             <div>
               <h1 className="text-5xl font-bold">
@@ -134,6 +187,22 @@ export default function OfficerPortal() {
               <p className="text-gray-400 mt-3 text-lg">
                 Officer Portal
               </p>
+
+              <p className="text-gray-500 mt-2">
+                Kliknutím na fotografii ji můžete změnit.
+              </p>
+
+              {message && (
+                <p
+                  className={`mt-3 ${
+                    message.includes("úspěšně")
+                      ? "text-green-400"
+                      : "text-red-400"
+                  }`}
+                >
+                  {message}
+                </p>
+              )}
             </div>
 
           </div>
@@ -235,7 +304,7 @@ export default function OfficerPortal() {
             </h2>
 
             <p className="text-gray-400 mt-2">
-              Policejní formuláře a žádosti.
+              Policejní formuláře a materiály.
             </p>
 
           </div>
