@@ -18,34 +18,21 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
           COMMIT_MESSAGE=$(git log -1 --pretty=%B)
-          COMMIT_AUTHOR=$(git log -1 --pretty=%an)
-          COMMIT_URL="https://github.com/${{ github.repository }}/commit/${{ github.sha }}"
 
           curl -H "Content-Type: application/json" \
             -d "{
               \"username\": \"LSPD Git\",
               \"embeds\": [{
                 \"title\": \"🚔 LSPD Web – Nová změna\",
-                \"description\": \"Na GitHub byl nahrán nový commit.\",
+                \"description\": \"Na webu byla provedena nová změna.\",
                 \"color\": 3447003,
                 \"fields\": [
                   {
-                    \"name\": \"📝 Commit\",
+                    \"name\": \"📝 Změna\",
                     \"value\": \"${COMMIT_MESSAGE}\",
                     \"inline\": false
-                  },
-                  {
-                    \"name\": \"👤 Autor\",
-                    \"value\": \"${COMMIT_AUTHOR}\",
-                    \"inline\": true
-                  },
-                  {
-                    \"name\": \"🌐 Branch\",
-                    \"value\": \"main\",
-                    \"inline\": true
                   }
-                ],
-                \"url\": \"${COMMIT_URL}\"
+                ]
               }]
             }" \
             "$DISCORD_WEBHOOK"
