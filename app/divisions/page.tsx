@@ -69,12 +69,20 @@ export default function Divisions() {
           >
             Domov
           </a>
+
           <a
-  href="/news"
-  className="hover:text-blue-400"
->
-  Novinky
-</a>
+            href="/news"
+            className="
+              px-3
+              py-2
+              rounded-lg
+              hover:bg-blue-900/30
+              hover:text-blue-400
+              transition
+            "
+          >
+            Novinky
+          </a>
 
           <a
             href="/divisions"
@@ -130,82 +138,88 @@ export default function Divisions() {
       {/* HLAVIČKA STRÁNKY */}
       {/* ========================================= */}
 
-      <section className="
-        relative
-        py-28
-        px-6
-        text-center
-        overflow-hidden
-        bg-gradient-to-b
-        from-blue-950/40
-        via-gray-950
-        to-gray-950
-      ">
+      <section
+        className="
+          relative
+          py-28
+          px-6
+          text-center
+          overflow-hidden
+          bg-gradient-to-b
+          from-blue-950/40
+          via-gray-950
+          to-gray-950
+        "
+      >
 
-        {/* Modré světlo */}
-
-        <div className="
-          absolute
-          top-0
-          left-1/2
-          -translate-x-1/2
-          w-[700px]
-          h-[300px]
-          bg-blue-600/10
-          blur-3xl
-          rounded-full
-        " />
-
+        <div
+          className="
+            absolute
+            top-0
+            left-1/2
+            -translate-x-1/2
+            w-[700px]
+            h-[300px]
+            bg-blue-600/10
+            blur-3xl
+            rounded-full
+          "
+        />
 
         <div className="relative z-10 max-w-4xl mx-auto">
 
-          <p className="
-            text-blue-400
-            uppercase
-            tracking-[0.4em]
-            font-bold
-            text-sm
-            mb-5
-          ">
+          <p
+            className="
+              text-blue-400
+              uppercase
+              tracking-[0.4em]
+              font-bold
+              text-sm
+              mb-5
+            "
+          >
             Los Santos Police Department
           </p>
 
-          <h2 className="
-            text-5xl
-            md:text-7xl
-            font-black
-            tracking-tight
-          ">
+          <h2
+            className="
+              text-5xl
+              md:text-7xl
+              font-black
+              tracking-tight
+            "
+          >
             Divize
           </h2>
 
-          <p className="
-            text-gray-400
-            text-lg
-            md:text-xl
-            mt-6
-            max-w-2xl
-            mx-auto
-          ">
+          <p
+            className="
+              text-gray-400
+              text-lg
+              md:text-xl
+              mt-6
+              max-w-2xl
+              mx-auto
+            "
+          >
             Specializované jednotky a oddělení
             Los Santos Police Department
           </p>
 
         </div>
 
-
-        {/* Spodní přechod */}
-
-        <div className="
-          absolute
-          bottom-0
-          left-0
-          right-0
-          h-32
-          bg-gradient-to-t
-          from-gray-950
-          to-transparent
-        " />
+        <div
+          className="
+            absolute
+            bottom-0
+            left-0
+            right-0
+            h-32
+            bg-gradient-to-t
+            from-gray-950
+            to-transparent
+          "
+        />
 
       </section>
 
@@ -214,75 +228,120 @@ export default function Divisions() {
       {/* MODRÁ LINKA */}
       {/* ========================================= */}
 
-      <div className="
-        h-px
-        max-w-6xl
-        mx-auto
-        bg-gradient-to-r
-        from-transparent
-        via-blue-600
-        to-transparent
-      " />
+      <div
+        className="
+          h-px
+          max-w-6xl
+          mx-auto
+          bg-gradient-to-r
+          from-transparent
+          via-blue-600
+          to-transparent
+        "
+      />
 
 
       {/* ========================================= */}
       {/* DIVIZE */}
       {/* ========================================= */}
 
-      <section className="
-        relative
-        px-6
-        md:px-10
-        py-24
-        bg-gradient-to-b
-        from-gray-950
-        via-blue-950/10
-        to-gray-950
-      ">
+      <section
+        className="
+          relative
+          px-6
+          md:px-10
+          py-24
+          bg-gradient-to-b
+          from-gray-950
+          via-blue-950/10
+          to-gray-950
+        "
+      >
 
-        <div className="
-          max-w-7xl
-          mx-auto
-          grid
-          md:grid-cols-2
-          lg:grid-cols-3
-          gap-7
-        ">
+        <div
+          className="
+            max-w-6xl
+            mx-auto
+            flex
+            flex-col
+            gap-8
+          "
+        >
+
+          {/* DETECTIVE BUREAU */}
 
           <DivisionCard
             name="Detective Bureau"
             description="Divize zaměřená na vyšetřování závažné trestné činnosti, práci s důkazy a vedení komplexních vyšetřování."
+            commander="Michael Joseph Truman"
+            contact=".matyy."
+            image="/images/porada.png"
           />
+
+
+          {/* SWAT */}
 
           <DivisionCard
             name="Special Weapons and Tactics"
             description="Speciální taktická jednotka určená pro řešení vysoce rizikových situací, krizových událostí a taktických operací."
+            commander="Elijah Nixon"
+            contact="apollo.the.goat"
+            image="/images/s.w.a.t..png"
           />
+
+
+          {/* RECRUITMENT & TRAINING */}
 
           <DivisionCard
             name="Recruitment & Training Division"
             description="Zajišťuje nábor nových členů, jejich výcvik a přípravu budoucích policistů Los Santos Police Department."
+            commander="Neuvedeno"
+            contact="ondr11k"
+            image="/images/academy.png"
           />
+
+
+          {/* GANG & NARCOTICS */}
 
           <DivisionCard
             name="Gang and Narcotics Division"
             description="Jednotka zaměřená na boj proti gangům, organizovanému zločinu a drogové kriminalitě."
+            commander="Neuvedeno"
+            contact="Neuvedeno"
+            image="/images/g.a.n.g..jpg"
           />
+
+
+          {/* AIR SUPPORT */}
 
           <DivisionCard
             name="Air Support Division"
             description="Poskytuje leteckou podporu, průzkum ze vzduchu a asistenci pozemním jednotkám při náročných operacích."
+            commander="Neuvedeno"
+            contact="Neuvedeno"
             image={asdImage.src}
           />
+
+
+          {/* TRAFFIC */}
 
           <DivisionCard
             name="Traffic Enforcement Division"
             description="Zajišťuje dohled nad bezpečností silničního provozu, kontrolu dopravy a řešení dopravních přestupků."
+            commander="James Korwill"
+            contact="micky_580cz"
+            image="/images/traffic.png"
           />
+
+
+          {/* CANINE */}
 
           <DivisionCard
             name="Canine Platoon"
             description="Jednotka služebních psů využívaná při pátrání, zadržování pachatelů a vyhledávání důkazů."
+            commander="Neuvedeno"
+            contact="Neuvedeno"
+            image="/images/k9.png"
           />
 
         </div>
@@ -294,55 +353,65 @@ export default function Divisions() {
       {/* SPODNÍ MODRÁ SEKCE */}
       {/* ========================================= */}
 
-      <section className="
-        relative
-        py-24
-        px-6
-        text-center
-        bg-gradient-to-b
-        from-gray-950
-        via-blue-950/30
-        to-black
-      ">
+      <section
+        className="
+          relative
+          py-24
+          px-6
+          text-center
+          bg-gradient-to-b
+          from-gray-950
+          via-blue-950/30
+          to-black
+        "
+      >
 
-        <div className="
-          absolute
-          top-0
-          left-0
-          right-0
-          h-px
-          bg-gradient-to-r
-          from-transparent
-          via-blue-500
-          to-transparent
-        " />
+        <div
+          className="
+            absolute
+            top-0
+            left-0
+            right-0
+            h-px
+            bg-gradient-to-r
+            from-transparent
+            via-blue-500
+            to-transparent
+          "
+        />
 
         <div className="max-w-3xl mx-auto">
 
-          <p className="
-            text-blue-400
-            uppercase
-            tracking-[0.3em]
-            text-sm
-            font-bold
-            mb-4
-          ">
+          <p
+            className="
+              text-blue-400
+              uppercase
+              tracking-[0.3em]
+              text-sm
+              font-bold
+              mb-4
+            "
+          >
             Los Santos Police Department
           </p>
 
-          <h2 className="
-            text-3xl
-            md:text-4xl
-            font-black
-          ">
+          <h2
+            className="
+              text-3xl
+              md:text-4xl
+              font-black
+            "
+          >
             Jednotně. Profesionálně. Připraveně.
           </h2>
 
-          <p className="
-            text-gray-400
-            mt-5
-            leading-relaxed
-          ">
+          <p
+            className="
+              text-gray-400
+              mt-5
+              leading-relaxed
+            "
+          >
             Každá divize má svou specializaci, ale všechny
             mají společný cíl – chránit obyvatele Los Santos
             a poskytovat profesionální policejní službu.
@@ -357,13 +426,15 @@ export default function Divisions() {
       {/* FOOTER */}
       {/* ========================================= */}
 
-      <footer className="
-        border-t
-        border-blue-900/40
-        bg-black
-        py-8
-        text-center
-      ">
+      <footer
+        className="
+          border-t
+          border-blue-900/40
+          bg-black
+          py-8
+          text-center
+        "
+      >
 
         <p className="text-gray-500">
           Los Santos Police Department
@@ -387,120 +458,217 @@ export default function Divisions() {
 function DivisionCard({
   name,
   description,
+  commander,
+  contact,
   image,
 }: {
   name: string;
   description: string;
+  commander: string;
+  contact: string;
   image?: string;
 }) {
 
   return (
 
-    <div className="
-      group
-      relative
-      overflow-hidden
-      bg-gray-900/80
-      rounded-2xl
-      border
-      border-gray-800
-      p-7
-      hover:border-blue-600
-      hover:bg-blue-950/20
-      transition-all
-      duration-300
-      hover:-translate-y-1
-      hover:shadow-2xl
-      hover:shadow-blue-950/40
-    ">
+    <div
+      className="
+        group
+        relative
+        overflow-hidden
+        bg-gray-900/80
+        rounded-2xl
+        border
+        border-gray-800
+        p-5
+        md:p-6
+        hover:border-blue-600
+        hover:bg-blue-950/20
+        transition-all
+        duration-300
+        hover:shadow-2xl
+        hover:shadow-blue-950/40
+      "
+    >
 
       {/* Horní modrá linka */}
 
-      <div className="
-        absolute
-        top-0
-        left-0
-        right-0
-        h-1
-        bg-gradient-to-r
-        from-blue-900
-        via-blue-500
-        to-blue-900
-        opacity-60
-        group-hover:opacity-100
-        transition
-      " />
+      <div
+        className="
+          absolute
+          top-0
+          left-0
+          right-0
+          h-1
+          bg-gradient-to-r
+          from-blue-900
+          via-blue-500
+          to-blue-900
+          opacity-60
+          group-hover:opacity-100
+          transition
+        "
+      />
 
 
-      {/* ASD OBRÁZEK */}
+      {/* OBSAH */}
 
-      {image && (
+      <div
+        className="
+          flex
+          flex-col
+          md:flex-row
+          gap-6
+          md:gap-8
+          items-stretch
+        "
+      >
 
-        <div className="
-          w-full
-          h-64
-          rounded-xl
-          mb-6
-          overflow-hidden
-          bg-black/30
-          border
-          border-gray-800
-        ">
+        {/* OBRÁZEK */}
 
-          <img
-            src={image}
+        {image && (
+
+          <div
             className="
               w-full
-              h-full
-              object-contain
-              scale-125
-              group-hover:scale-135
-              transition-transform
-              duration-500
+              md:w-[360px]
+              lg:w-[400px]
+              h-56
+              md:h-60
+              flex-shrink-0
+              rounded-xl
+              overflow-hidden
+              bg-black/40
+              border
+              border-gray-800
             "
-            alt={name}
+          >
+
+            <img
+              src={image}
+              className="
+                w-full
+                h-full
+                object-cover
+                group-hover:scale-105
+                transition-transform
+                duration-500
+              "
+              alt={name}
+            />
+
+          </div>
+
+        )}
+
+
+        {/* INFORMACE */}
+
+        <div
+          className="
+            flex
+            flex-col
+            justify-center
+            py-2
+            md:py-3
+            flex-1
+          "
+        >
+
+          {/* NÁZEV DIVIZE */}
+
+          <h3
+            className="
+              text-2xl
+              md:text-3xl
+              font-bold
+              group-hover:text-blue-400
+              transition
+            "
+          >
+            {name}
+          </h3>
+
+
+          {/* MODRÁ LINKA */}
+
+          <div
+            className="
+              mt-3
+              h-0.5
+              w-20
+              bg-gradient-to-r
+              from-blue-500
+              to-transparent
+              group-hover:w-32
+              transition-all
+              duration-300
+            "
           />
+
+
+          {/* POPIS */}
+
+          <p
+            className="
+              text-gray-400
+              leading-relaxed
+              mt-4
+              max-w-2xl
+            "
+          >
+            {description}
+          </p>
+
+
+          {/* VELITEL */}
+
+          <div className="mt-6">
+
+            <div className="flex flex-wrap items-center gap-2">
+
+              <span className="text-gray-500 font-medium">
+                Velitel:
+              </span>
+
+              <span
+                className="
+                  text-gray-200
+                  font-semibold
+                  group-hover:text-blue-400
+                  transition-colors
+                "
+              >
+                {commander}
+              </span>
+
+            </div>
+
+
+            {/* DISCORD KONTAKT */}
+
+            <div className="flex flex-wrap items-center gap-2 mt-2">
+
+              <span className="text-gray-600 text-sm">
+                Kontakt:
+              </span>
+
+              <span
+                className="
+                  text-gray-400
+                  text-sm
+                "
+              >
+                {contact}
+              </span>
+
+            </div>
+
+          </div>
 
         </div>
 
-      )}
-
-
-      <h3 className="
-        text-2xl
-        font-bold
-        group-hover:text-blue-400
-        transition
-      ">
-        {name}
-      </h3>
-
-
-      <p className="
-        text-gray-400
-        leading-relaxed
-        mt-4
-      ">
-        {description}
-      </p>
-
-
-      <button
-        className="
-          mt-7
-          bg-blue-600
-          hover:bg-blue-500
-          px-5
-          py-2.5
-          rounded-lg
-          font-semibold
-          transition
-          shadow-lg
-          shadow-blue-950/30
-        "
-      >
-        Více informací
-      </button>
+      </div>
 
     </div>
 
