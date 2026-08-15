@@ -260,7 +260,7 @@ export default function Divisions() {
           />
 
           <DivisionCard
-            name="Recruitment Training Division"
+            name="Recruitment & Training Division"
             description="Zajišťuje nábor nových členů, jejich výcvik a přípravu budoucích policistů Los Santos Police Department."
           />
 

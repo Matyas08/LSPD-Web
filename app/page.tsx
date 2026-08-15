@@ -9,7 +9,8 @@ export default function Home() {
     "/images/pohreb.png",
     "/images/swatak.png",
     "/images/vedeni.png",
-    "/images/porada.png",    
+    "/images/porada.png",
+    "/images/auto.png",            
   ];
 
   const [currentPhoto, setCurrentPhoto] = useState(0);
